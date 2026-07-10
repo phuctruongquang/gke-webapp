@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
       - name: krakend
-        image: krakend/krakend:2.6
+        image: devopsfaith/krakend:2.6.0
         ports:
         - containerPort: 8080
         volumeMounts:

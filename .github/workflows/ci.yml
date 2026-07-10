@@ -1,0 +1,41 @@
+name: CI to Google Artifact Registry
+
+on:
+  push:
+    branches: [ "main" ]
+
+# Cấp quyền để GitHub xin token tạm thời từ Google
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Xác thực bằng Workload Identity (Đường hầm niềm tin, không dùng Password/Key)
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: 'projects/451383144811/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+        service_account: 'github-actions-sa@project-e9976a09-db35-49cd-abb.iam.gserviceaccount.com'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker for GCP
+      run: |
+        gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+    - name: Build and push Docker image
+      run: |
+        SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+        REPO_URL="asia-southeast1-docker.pkg.dev/project-e9976a09-db35-49cd-abb/webapp-repo/my-web"
+        
+        docker build -t $REPO_URL:latest -t $REPO_URL:$SHORT_SHA .
+        docker push $REPO_URL:latest
+        docker push $REPO_URL:$SHORT_SHA

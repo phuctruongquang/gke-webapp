@@ -2,13 +2,21 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: webapp-ingress
-  annotations:
-    kubernetes.io/ingress.class: nginx
 spec:
+  ingressClassName: nginx
   rules:
   - host: googlecloud.byn.id.vn
     http:
       paths:
+      # Đường dẫn 1: Ném vào KrakenD
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: krakend-service
+            port:
+              number: 80
+      # Đường dẫn 2: Ném vào Web App gốc
       - path: /
         pathType: Prefix
         backend:

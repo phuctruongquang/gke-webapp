@@ -27,7 +27,7 @@ kind: Service
 metadata:
   name: webapp-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: my-web
   ports:

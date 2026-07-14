@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx" # Chỉ định dùng Nginx làm lễ tân
 spec:
   rules:
-  - host: lab.byn.id.vn # Tên miền bạn đã cấu hình trên Cloudflare
+  - host: staging.byn.id.vn # Tên miền bạn đã cấu hình trên Cloudflare
     http:
       paths:
       - path: /

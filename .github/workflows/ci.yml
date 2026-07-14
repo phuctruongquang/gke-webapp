@@ -99,3 +99,17 @@ jobs:
           🚀 Bản cập nhật mới đã được đẩy sang ArgoCD.
           🌐 Môi trường: Production
           🔗 Domain: https://production.byn.id.vn
+
+    # --- BOT BÁO CÁO LỖI NẾU JOB 2 THẤT BẠI ---
+    - name: Send Telegram Alert on Deploy Failure
+      if: failure()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          🚨 LỖI TRIỂN KHAI PRODUCTION!
+          Sếp đã duyệt nhưng quá trình cập nhật cấu hình sang ArgoCD bị thất bại.
+          👤 Người duyệt: ${{ github.actor }}
+          Vào GitHub Actions kiểm tra log ngay nhé sếp!
+          🔗 Link: https://github.com/${{ github.repository }}/actions

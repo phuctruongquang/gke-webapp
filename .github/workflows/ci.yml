@@ -40,9 +40,9 @@ jobs:
         docker push $REPO_URL:latest
         docker push $REPO_URL:$SHORT_SHA
 
-    # --- BOT BÁO CÁO LỖI NẾU JOB 1 THẤT BẠI ---
+    # --- BOT BÁO LỖI NẾU JOB 1 THẤT BẠI ---
     - name: Send Telegram Alert on Failure
-      if: failure() # Lệnh này bắt Bot chỉ chạy khi có 1 bước bên trên bị lỗi
+      if: failure()
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO }}
@@ -51,6 +51,20 @@ jobs:
           ❌ BÁO ĐỘNG ĐỎ CI/CD: Đóng gói Image thất bại!
           👤 Người thao tác: ${{ github.actor }}
           Vào GitHub Actions kiểm tra log ngay sếp ơi!
+
+    # --- BOT BÁO CHỜ DUYỆT KHI JOB 1 XONG ---
+    - name: Send Telegram Alert for Approval
+      if: success()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          ⏳ YÊU CẦU PHÊ DUYỆT!
+          📦 Code đã được đóng gói thành Docker Image an toàn.
+          👤 Nhân viên: ${{ github.actor }} đang xin phép đẩy lên Production.
+          👉 Sếp vào GitHub check và Approve ngay nhé!
+          🔗 Link: https://github.com/${{ github.repository }}/actions
 
   # ==========================================
   # JOB 2: CẬP NHẬT K8S (Chờ Sếp Phê Duyệt)
@@ -73,7 +87,7 @@ jobs:
         git commit -m "ci: update image tag to $SHORT_SHA [skip ci]"
         git push
 
-    # --- BOT BÁO CÁO THÀNH CÔNG SAU KHI SẾP DUYỆT ---
+    # --- BOT BÁO THÀNH CÔNG SAU KHI SẾP DUYỆT XONG ---
     - name: Send Telegram Alert on Success
       if: success()
       uses: appleboy/telegram-action@master
@@ -85,17 +99,3 @@ jobs:
           🚀 Bản cập nhật mới đã được đẩy sang ArgoCD.
           🌐 Môi trường: Production
           🔗 Domain: https://production.byn.id.vn
-
-    # --- BOT BÁO CÁO CHỜ SẾP DUYỆT NẾU JOB 1 THÀNH CÔNG ---
-    - name: Send Telegram Alert for Approval
-      if: success()
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: |
-          ⏳ YÊU CẦU PHÊ DUYỆT!
-          📦 Code đã được đóng gói thành Docker Image an toàn.
-          👤 Nhân viên: ${{ github.actor }} đang xin phép đẩy lên Production.
-          👉 Sếp vào GitHub check và Approve ngay nhé!
-          🔗 Link: https://github.com/${{ github.repository }}/actions

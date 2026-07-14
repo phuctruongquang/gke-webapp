@@ -1,4 +1,4 @@
-# 1. Cấu hình krakend.json (Dynamic Routing)
+# 1. Cấu hình krakend.json
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,18 +7,18 @@ data:
   krakend.json: |
     {
       "version": 3,
-      "name": "Dynamic GKE Gateway",
+      "name": "GKE API Gateway",
       "port": 8080,
       "endpoints": [
         {
-          "endpoint": "/{service}/{anything}",
+          "endpoint": "/api/gateway-test",
           "method": "GET",
           "output_encoding": "no-op",
           "backend": [
             {
-              "url_pattern": "/{anything}",
+              "url_pattern": "/",
               "encoding": "no-op",
-              "host": ["http://{service}.default.svc.cluster.local:80"]
+              "host": ["http://webapp-service.default.svc.cluster.local:80"]
             }
           ]
         },

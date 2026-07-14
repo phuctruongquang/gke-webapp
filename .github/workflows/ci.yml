@@ -10,14 +10,15 @@ permissions:
   id-token: write
 
 jobs:
-  build-and-push:
+  # ==========================================
+  # JOB 1: ĐÓNG GÓI VÀ ĐẨY IMAGE (Chạy tự động)
+  # ==========================================
+  build-and-push-image:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Xác thực bằng Workload Identity (Đường hầm niềm tin, không dùng Password/Key)
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
@@ -39,6 +40,17 @@ jobs:
         docker build -t $REPO_URL:latest -t $REPO_URL:$SHORT_SHA .
         docker push $REPO_URL:latest
         docker push $REPO_URL:$SHORT_SHA
+
+  # ==========================================
+  # JOB 2: CẬP NHẬT K8S (Chờ Sếp Phê Duyệt)
+  # ==========================================
+  update-manifest:
+    needs: build-and-push-image    # Bắt buộc phải đợi Job 1 chạy xong và thành công
+    environment: production        # Gọi "Phòng phê duyệt" mà bạn vừa setup trên GitHub
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4    # Kéo code về lại vì đây là một máy ảo mới
 
     - name: Update Kubernetes Manifest
       run: |

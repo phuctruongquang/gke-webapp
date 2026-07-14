@@ -63,11 +63,11 @@ jobs:
           ⏳ YÊU CẦU PHÊ DUYỆT!
           📦 Code đã được đóng gói thành Docker Image an toàn.
           👤 Nhân viên: ${{ github.actor }} đang xin phép đẩy lên Production.
-          👉 Sếp vào GitHub check và Approve ngay nhé!
+          👉 Sếp vào GitHub check và Approve ngay nhé!!
           🔗 Link: https://github.com/${{ github.repository }}/actions
 
   # ==========================================
-  # JOB 2: CẬP NHẬT K8S (Chờ Sếp Phê Duyệt)
+  # JOB 2: CẬP NHẬT K8S (Chờ Sếp Phê Duyệt.)
   # ==========================================
   update-manifest:
     needs: build-and-push-image

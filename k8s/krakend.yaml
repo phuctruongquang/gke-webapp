@@ -1,4 +1,4 @@
-# 1. Cấu hình krakend.json
+# 1. Cấu hình krakend.json (Dynamic Routing)
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,9 +7,21 @@ data:
   krakend.json: |
     {
       "version": 3,
-      "name": "GKE API Gateway",
+      "name": "Dynamic GKE Gateway",
       "port": 8080,
       "endpoints": [
+        {
+          "endpoint": "/{service}/{anything}",
+          "method": "GET",
+          "output_encoding": "no-op",
+          "backend": [
+            {
+              "url_pattern": "/{anything}",
+              "encoding": "no-op",
+              "host": ["http://{service}.default.svc.cluster.local:80"]
+            }
+          ]
+        },
         {
           "endpoint": "/",
           "method": "GET",
@@ -19,30 +31,6 @@ data:
               "url_pattern": "/",
               "encoding": "no-op",
               "host": ["http://webapp-service.default.svc.cluster.local:80"]
-            }
-          ]
-        },
-        {
-          "endpoint": "/api/gateway-test",
-          "method": "GET",
-          "output_encoding": "no-op",
-          "backend": [
-            {
-              "url_pattern": "/",
-              "encoding": "no-op",
-              "host": ["http://webapp-service.default.svc.cluster.local:80"]
-            }
-          ]
-        },
-        {
-          "endpoint": "/promo/{anything}",
-          "method": "GET",
-          "output_encoding": "no-op",
-          "backend": [
-            {
-              "url_pattern": "/{anything}",
-              "encoding": "no-op",
-              "host": ["http://promo-service.default.svc.cluster.local:80"]
             }
           ]
         }
@@ -77,7 +65,7 @@ spec:
         configMap:
           name: krakend-config
 ---
-# 3. Mở cổng nội bộ
+# 3. Mở cổng nội bộ cho KrakenD
 apiVersion: v1
 kind: Service
 metadata:

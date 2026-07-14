@@ -6,7 +6,7 @@ on:
 
 # Cấp quyền để GitHub xin token tạm thời từ Google
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -39,3 +39,13 @@ jobs:
         docker build -t $REPO_URL:latest -t $REPO_URL:$SHORT_SHA .
         docker push $REPO_URL:latest
         docker push $REPO_URL:$SHORT_SHA
+
+    - name: Update Kubernetes Manifest
+      run: |
+        SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+        sed -i "s|image: asia-southeast1-docker.pkg.dev/project-e9976a09-db35-49cd-abb/webapp-repo/my-web:.*|image: asia-southeast1-docker.pkg.dev/project-e9976a09-db35-49cd-abb/webapp-repo/my-web:$SHORT_SHA|g" k8s/app.yaml
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add k8s/app.yaml
+        git commit -m "ci: update image tag to $SHORT_SHA [skip ci]"
+        git push

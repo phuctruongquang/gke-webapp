@@ -85,3 +85,17 @@ jobs:
           🚀 Bản cập nhật mới đã được đẩy sang ArgoCD.
           🌐 Môi trường: Production
           🔗 Domain: https://production.byn.id.vn
+
+    # --- BOT BÁO CÁO CHỜ SẾP DUYỆT NẾU JOB 1 THÀNH CÔNG ---
+    - name: Send Telegram Alert for Approval
+      if: success()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          ⏳ YÊU CẦU PHÊ DUYỆT!
+          📦 Code đã được đóng gói thành Docker Image an toàn.
+          👤 Nhân viên: ${{ github.actor }} đang xin phép đẩy lên Production.
+          👉 Sếp vào GitHub check và Approve ngay nhé!
+          🔗 Link: https://github.com/${{ github.repository }}/actions

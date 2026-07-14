@@ -1,2 +1,2 @@
-FROM nginx_test_loi_tu_lua
+FROM nginx:alpine
 COPY index.html /usr/share/nginx/html/index.html

@@ -1,4 +1,4 @@
-# 1. Cấu hình krakend.json (Khai báo luật đi đường)
+# 1. Cấu hình krakend.json
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -21,11 +21,23 @@ data:
               "host": ["http://webapp-service.default.svc.cluster.local:80"]
             }
           ]
+        },
+        {
+          "endpoint": "/promo/{anything}",
+          "method": "GET",
+          "output_encoding": "no-op",
+          "backend": [
+            {
+              "url_pattern": "/{anything}",
+              "encoding": "no-op",
+              "host": ["http://promo-service.default.svc.cluster.local:80"]
+            }
+          ]
         }
       ]
     }
 ---
-# 2. Cài đặt Pod KrakenD
+# 2. Cài đặt Pod KrakenD (Không đổi)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -53,7 +65,7 @@ spec:
         configMap:
           name: krakend-config
 ---
-# 3. Mở cổng nội bộ cho KrakenD
+# 3. Mở cổng nội bộ (ĐÃ SỬA TARGETPORT)
 apiVersion: v1
 kind: Service
 metadata:
@@ -64,4 +76,4 @@ spec:
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8080
+    targetPort: 8080 # <--- BẮT BUỘC PHẢI THÊM ĐỂ TRỎ ĐÚNG VÀO APP KRAKEND

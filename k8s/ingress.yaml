@@ -2,9 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: webapp-ingress
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
 spec:
+  ingressClassName: nginx
   rules:
   - host: production.byn.id.vn
     http:
@@ -13,6 +12,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: krakend-service # Đi qua KrakenD
+            name: krakend-service
             port:
               number: 80

@@ -2,25 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: webapp-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx" # Chỉ định dùng Nginx làm lễ tân
 spec:
-  ingressClassName: nginx
   rules:
-  - host: googlecloud.byn.id.vn
+  - host: lab.byn.id.vn # Tên miền bạn đã cấu hình trên Cloudflare
     http:
       paths:
-      # Đường dẫn 1: Ném vào KrakenD
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: krakend-service
-            port:
-              number: 80
-      # Đường dẫn 2: Ném vào Web App gốc
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: webapp-service
+            name: webapp-service # Thay bằng đúng tên Service của Web trong thư mục k8s của bạn
             port:
-              number: 80
+              number: 80 # Cổng mà Service của bạn đang lắng nghe

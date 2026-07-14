@@ -17,7 +17,7 @@ spec:
       containers:
       - name: web-container
         # Lưu ý: Thay Project ID nếu cần. Đã thêm imagePullPolicy để luôn kéo code mới
-        image: asia-southeast1-docker.pkg.dev/project-e9976a09-db35-49cd-abb/webapp-repo/my-web:641e9b6
+        image: asia-southeast1-docker.pkg.dev/project-e9976a09-db35-49cd-abb/webapp-repo/my-web:d8c43eb
         imagePullPolicy: Always
         ports:
         - containerPort: 80

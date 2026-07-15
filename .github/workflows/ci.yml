@@ -67,25 +67,40 @@ jobs:
           🔗 Link: https://github.com/${{ github.repository }}/actions
 
   # ==========================================
-  # JOB 2: CẬP NHẬT K8S (Chờ Sếp Phê Duyệt.)
+  # JOB 2: CẬP NHẬT K8S SANG REPO INFRA
   # ==========================================
   update-manifest:
     needs: build-and-push-image
     environment: production
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    # Bước 1: Kéo Repo Infra (Nhà mới) về máy ảo
+    - name: Checkout Infra Repository
       uses: actions/checkout@v4
+      with:
+        repository: phuctruongquang/gke-webapp-infra  # Tên repo mới
+        token: ${{ secrets.PAT_TOKEN }}               # Dùng thẻ thông hành để được phép push
+        path: infra-repo                              # Tải về bỏ vào thư mục tên là 'infra-repo'
 
-    - name: Update Kubernetes Manifest
+    # Bước 2: Sửa mã Tag và Push lên Repo Infra
+    - name: Update Kubernetes Manifest and Push
       run: |
         SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+        
+        # Di chuyển vào thư mục repo mới vừa tải về
+        cd infra-repo 
+        
+        # Sửa file app.yaml (lưu ý đường dẫn lúc này là k8s/app.yaml)
         sed -i "s|image: asia-southeast1-docker.pkg.dev/project-e9976a09-db35-49cd-abb/webapp-repo/my-web:.*|image: asia-southeast1-docker.pkg.dev/project-e9976a09-db35-49cd-abb/webapp-repo/my-web:$SHORT_SHA|g" k8s/app.yaml
+        
+        # Cấu hình user bot để commit
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # Commit và Push lên nhà mới
         git add k8s/app.yaml
         git commit -m "ci: update image tag to $SHORT_SHA [skip ci]"
-        git push
+        git push origin main
 
     # --- BOT BÁO THÀNH CÔNG SAU KHI SẾP DUYỆT XONG ---
     - name: Send Telegram Alert on Success
